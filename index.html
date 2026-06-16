@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Santo Biju | Technova Portfolio</title>
+    <style>
+        /* Design System Tokens */
+        :root {
+            --bg-dark: #090d16;       
+            --text-bright: #e2e8f0;   
+            --text-muted: #94a3b8;    
+            --neon-blue: #38bdf8;     
+            --card-glow: rgba(17, 24, 39, 0.7); 
+            --border-glow: rgba(51, 65, 85, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-bright);
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* LIVE BACKGROUND PATTERN CANVAS */
+        #pattern-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1; 
+            pointer-events: none; 
+        }
+
+        /* ABSOLUTE TOP RIGHT CORNER POSITIONING FOR LOGO */
+        .brand-logo {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            height: 55px; /* Clean, recognizable display height */
+            width: auto;
+            object-fit: contain;
+            z-index: 10; /* Keeps it layered neatly above the background particles */
+        }
+
+        /* LAYOUT FRAMEWORK */
+        .layout-grid {
+            display: flex;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 40px;
+            gap: 48px;
+            position: relative;
+            z-index: 2; 
+        }
+
+        /* FIXED LEFT PANEL */
+        .left-panel {
+            position: sticky;
+            top: 0;
+            width: 40%;
+            height: 100vh;
+            padding: 80px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* SCROLLING RIGHT PANEL */
+        .right-panel {
+            width: 60%;
+            padding: 80px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 56px;
+        }
+
+        /* HIGH GRAPHICS GRADIENT ENGINE FOR TECHNOVA */
+        .brand-title {
+            font-size: 2.4rem; 
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin: 0;
+            line-height: 1.1;
+            background: linear-gradient(
+                to right, 
+                #38bdf8, 
+                #06b6d4, 
+                #6366f1, 
+                #38bdf8
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShimmer 4s linear infinite;
+        }
+
+        @keyframes textShimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        /* PREMIUM SILVER GREY TAGLINE */
+        .brand-motto {
+            font-family: monospace;
+            color: #94a3b8; 
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            font-weight: 700;
+            margin: 10px 0 24px 0;
+            text-transform: uppercase;
+        }
+
+        h2.name-heading {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #f8fafc;
+            margin: 0 0 16px 0;
+        }
+
+        .bio-text {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* RUNTIME SCROLL TABS */
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 40px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            font-family: monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+
+        .nav-line {
+            width: 32px;
+            height: 1px;
+            background-color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            color: var(--neon-blue);
+        }
+
+        .nav-item:hover .nav-line {
+            width: 64px;
+            background-color: var(--neon-blue);
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #f8fafc;
+            margin: 0 0 16px 0;
+            display: none;
+        }
+
+        /* GLASSMORPHISM CARDS */
+        .panel-card {
+            background: var(--card-glow);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .panel-card:hover {
+            border-color: var(--neon-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-time {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-heading {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin: 2px 0 0 0;
+        }
+
+        .card-subheading {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 2px 0 0 0;
+        }
+
+        .pill-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tech-pill {
+            font-family: monospace;
+            font-size: 0.72rem;
+            background: rgba(56, 189, 248, 0.08);
+            color: var(--neon-blue);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-weight: 600;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+        }
+
+        .click-prompt {
+            font-family: monospace;
+            font-size: 0.78rem;
+            color: var(--neon-blue);
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: bold;
+        }
+
+        .social-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .social-link {
+            font-family: monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+        }
+
+        .social-link:hover {
+            color: var(--neon-blue);
+        }
+
+        @media (max-width: 768px) {
+            .brand-logo { position: relative; top: 0; right: 0; margin: 0 0 24px 0; float: none; }
+            .layout-grid { flex-direction: column; padding: 0 24px; }
+            .left-panel { position: relative; width: 100%; height: auto; padding: 60px 0 20px 0; }
+            .right-panel { width: 100%; padding: 0 0 60px 0; gap: 40px; }
+            .nav-links { display: none; }
+            .section-title { display: block; }
+            .brand-title { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MESH NETWORKS BACKGROUND CANVAS -->
+    <canvas id="pattern-canvas"></canvas>
+
+    <!-- AUTOMATIC RIGHT SIDE CORNER LOGO (MAPPED TO PNG FORMAT) -->
+    <img src="logo.png" alt="Technova Logo" class="brand-logo">
+
+    <div class="layout-grid">
+
+        <!-- STICKY PROFILE PANEL (LEFT PANEL) -->
+        <div class="left-panel">
+            <div>
+                <h1 class="brand-title">Technova</h1>
+                <div class="brand-motto">Innovate. Build. Transform.</div>
+                <h2 class="name-heading">Santo Biju</h2>
+                <p class="bio-text">
+                    Passionate Electrical and Electronics Engineering (EEE) student with a strong interest in emerging technologies, electric vehicles, renewable energy systems, and intelligent power solutions.
+                </p>
+
+                <!-- SCROLL LINK ANCHORS -->
+                <div class="nav-links">
+                    <a href="#objective" class="nav-item"><div class="nav-line"></div>Career Goal</a>
+                    <a href="#education" class="nav-item"><div class="nav-line"></div>Education</a>
+                    <a href="#skills" class="nav-item"><div class="nav-line"></div>Languages</a>
+                    <a href="#projects" class="nav-item"><div class="nav-line"></div>Projects</a>
+                    <a href="#resume" class="nav-item"><div class="nav-line"></div>Resume</a>
+                </div>
+            </div>
+
+            <!-- CONTACT SECTION LINKS -->
+            <div class="social-row">
+                <a href="mailto:santobiju06@gmail.com" class="social-link">Gmail: santobiju06@gmail.com</a>
+                <a href="https://www.linkedin.com/in/santo-biju-986b95389" target="_blank" class="social-link">LinkedIn: santo-biju-986b95389</a>
+                <a href="https://github.com/santobiju06-eng" target="_blank" class="social-link">GitHub: santobiju06-eng</a>
+            </div>
+        </div>
+
+        <!-- STRUCTURAL METRIC READOUTS (RIGHT PANEL) -->
+        <div class="right-panel">
+
+            <!-- 1. CAREER GOAL BLOCK -->
+            <section id="objective">
+                <h3 class="section-title">Career Goal</h3>
+                <div class="panel-card">
+                    <p class="card-desc" style="font-size: 0.98rem; color: #f8fafc; font-style: italic; line-height: 1.7; margin: 0;">
+                        "To become an innovative electrical engineer contributing to the advancement of electric vehicles, smart energy systems, and sustainable technologies."
+                    </p>
+                </div>
+            </section>
+
+            <!-- 2. EDUCATION SNAPSHOT -->
+            <section id="education">
+                <h3 class="section-title">Education</h3>
+                <div class="panel-card">
+                    <div class="card-time">B.Tech Sequence // 2025 — 2029</div>
+                    <h4 class="card-heading">Bachelor of Technology in Electrical & Electronics Engineering</h4>
+                    <p class="card-subheading">SRM Institute of Science and Technology</p>
+                    <p class="card-desc" style="color: var(--text-muted); font-size: 0.85rem;">Kattankulathur, Chennai, Tamil Nadu</p>
+                    <div class="pill-container">
+                        <span class="tech-pill" style="background: rgba(16, 185, 129, 0.08); color: #34d399; border-color: rgba(16, 185, 129, 0.15);">CGPA: 8.53</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. LANGUAGES/SKILLS MATRIX GRID -->
+            <section id="skills">
+                <h3 class="section-title">Languages & Skills</h3>
+                <div class="panel-card">
+                    <p class="card-desc" style="margin-bottom: 8px;">I enjoy designing and developing innovative engineering projects that solve real-world problems. Continuously learning new skills to prepare for the future of sustainable technology.</p>
+                    <div class="pill-container">
+                        <span class="tech-pill">Python</span>
+                        <span class="tech-pill">C</span>
+                        <span class="tech-pill">Electrical Circuit Design</span>
+                        <span class="tech-pill">Power Electronics</span>
+                        <span class="tech-pill">EV Technology</span>
+                        <span class="tech-pill">Battery Management Systems</span>
+                        <span class="tech-pill">Arduino & Microcontrollers</span>
+                        <span class="tech-pill">MATLAB / Simulink</span>
+                        <span class="tech-pill">Research & Technical Writing</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. PROJECTS SECTION LABELS -->
+            <section id="projects">
+                <h3 class="section-title">Projects</h3>
+                
+                <a href="project1.html" class="panel-card">
+                    <div class="card-time">1st Year Project // Click to view full report</div>
+                    <h4 class="card-heading">EV Wireless Charging System Using Arduino and LCD Display for Electric Vehicle Applications</h4>
+                    <p class="card-desc">
+                        An inductive power transfer blueprint engineered to transmit currents without direct electrical contact. Incorporates active IR sensor parameters, automated switching logic, and integrated output instrumentation.
+                    </p>
+                    <div class="click-prompt">
+                        Open Project Blueprint & Analysis Documentation &rarr;
+                    </div>
+                </a>
+            </section>
+
+            <!-- 5. RESUME SECTION -->
+            <section id="resume">
+                <h3 class="section-title">Resume</h3>
+                <div class="panel-card">
+                    <div class="card-time">Credentials // Verification Documentation</div>
+                    <h4 class="card-heading">Curriculum Vitae</h4>
+                    <p class="card-desc">
+                        Review my verified engineering track record logging structural project configurations, technical competencies, and academic credentials.
+                    </p>
+                    <a href="resume.pdf" target="_blank" style="font-family: monospace; font-size: 0.85rem; color: var(--neon-blue); text-decoration: none; font-weight: bold; display: inline-block; border: 1px solid rgba(56, 189, 248, 0.3); padding: 8px 16px; border-radius: 8px; margin-top: 10px; background: rgba(56, 189, 248, 0.02); width: fit-content; text-align: center;">
+                        OPEN RESUME PDF &rarr;
+                    </a>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- GRAPHICS ANIMATION MATRIX ENGINE -->
+    <script>
+        const canvas = document.getElementById('pattern-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+        const numberOfParticles = 45;
+
+        function setCanvasSize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        setCanvasSize();
+        window.addEventListener('resize', setCanvasSize);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 1;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX = -this.speedX;
+                if (this.y < 0 || this.y > canvas.height) this.speedY = -this.speedY;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(148, 163, 184, 0.25)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+        init();
+
+        function connectParticles() {
+            let maxDistance = 150;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let dx = particlesArray[a].x - particlesArray[b].x;
+                    let dy = particlesArray[a].y - particlesArray[b].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < maxDistance) {
+                        let opacity = (1 - (distance / maxDistance)) * 0.12;
+                        ctx.strokeStyle = `rgba(56, 189, 248, ${opacity})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            connectParticles();
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
